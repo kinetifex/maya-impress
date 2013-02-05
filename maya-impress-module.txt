@@ -1,0 +1,2 @@
++ maya-impress 1.0 + maya-impress 1.0 /path/to/maya-impress
+PYTHONPATH +:= ../maya-impress
