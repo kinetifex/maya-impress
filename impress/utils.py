@@ -80,3 +80,7 @@ def revealInFileManager( path ):
         subprocess.call(["explorer", "/select,"+path])
     else:
         raise NotImplementedError("Not yet implemented for current OS.")
+
+
+def safePath( file_path ):
+    return _Path( _Path(file_path).realpath().replace('\\','/') )

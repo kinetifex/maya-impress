@@ -37,7 +37,7 @@ class OptionModel( Model ):
     Used to setup fields that have stored optionVar settings.
     """
 
-    def preApply(self):
+    def preApply( self ):
         """
         Must return a dict of kwargs which will be passed to function.
         Returning None will cancel the command.
@@ -62,7 +62,7 @@ class Separator( Field ):
     """
 
     def __init__( self, name=None, **kwargs ):
-        super(Separator, self).__init__()
+        super( Separator, self ).__init__()
 
         self.name = name
         self.widget_kwargs = kwargs
@@ -88,7 +88,7 @@ class OptionField( Field ):
     """
 
     def __init__( self, default, label=None, labels=[], requires=None, name=None, varname=None, **kwargs ):
-        super(OptionField, self).__init__()
+        super( OptionField, self ).__init__()
 
         if not hasattr( self, 'widget_command' ):
             raise NotImplementedError( "OptionField must be sub-classed with required properties: 'widget_command', 'widget_value_arg'." )
@@ -291,7 +291,7 @@ class RadioButton( OptionField ):
 
 
     def __init__( self, basezero=False, **kwargs ):
-        super(RadioButton, self).__init__( **kwargs )
+        super( RadioButton, self ).__init__( **kwargs )
         self.basezero = basezero
 
     def buildWidget( self, **kwargs ):
@@ -360,7 +360,7 @@ class RadioButton( OptionField ):
         if self.basezero:
             value += 1
         elif value == 0:
-            pm.mel.warning("Can not set %s value to '0'. Requires 'basezero=True' " % self.__class__.__name__)
+            pm.mel.warning( "Can not set %s value to '0'. Requires 'basezero=True' " % self.__class__.__name__ )
             value = 1
 
         row_num = ( value - 1 ) / 4

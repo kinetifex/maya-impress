@@ -8,28 +8,28 @@ from pymel.util.path import Path as _Path
 import utils
 
 
-__fileDialog2_keys = ['dialogStyle','ds', 'caption','cap', 'startingDirectory','dir', 'fileFilter','ff', 'selectFileFilter','sff', 'fileMode','fm', 'okCaption','okc', 'cancelCaption','cc', 'returnFilter','rf', 'optionsUICreate','ocr', 'optionsUIInit','oin', 'fileTypeChanged','ftc', 'selectionChanged','sc', 'optionsUICommit','ocm']
+__fileDialog2_keys = ['dialogStyle', 'ds', 'caption', 'cap', 'startingDirectory', 'dir', 'fileFilter', 'ff', 'selectFileFilter', 'sff', 'fileMode', 'fm', 'okCaption', 'okc', 'cancelCaption', 'cc', 'returnFilter', 'rf', 'optionsUICreate', 'ocr', 'optionsUIInit', 'oin', 'fileTypeChanged', 'ftc', 'selectionChanged', 'sc', 'optionsUICommit', 'ocm']
 
 
 def _updateFileHistory( control, optionName, validate=False, basename=False ):
 
     historySize = pm.optionVar.get( 'pathHistory_size', 6 )
 
-    pathStr = control.getText().replace('\\','/')
-    if pathStr.endswith('\\') or pathStr.endswith('/'):
-        if len(pathStr) > 4:
+    pathStr = control.getText().replace( '\\', '/' )
+    if pathStr.endswith( '\\' ) or pathStr.endswith( '/' ):
+        if len( pathStr ) > 4:
             pathStr = pathStr[:-1]
 
-    path = _Path(pathStr)
+    path = _Path( pathStr )
 
     if basename:
         path = path.basename()
-        control.setFileName(path)
+        control.setFileName( path )
 
     valid = True
     if validate:
         if basename:
-            pm.mel.warning("basename and validate args cannot be combine (%s)" % control, False)
+            pm.mel.warning( "basename and validate args cannot be combine (%s)" % control, False )
         elif path.isdir():
             valid = True
         elif '.' in path.basename() and path.parent.isdir():
@@ -40,15 +40,15 @@ def _updateFileHistory( control, optionName, validate=False, basename=False ):
     if valid:
         historyList = pm.optionVar.get( 'pathHistory_%s' % optionName, [] )
 
-        if isinstance( historyList, pm.OptionVarList):
-            historyList = list(historyList)
+        if isinstance( historyList, pm.OptionVarList ):
+            historyList = list( historyList )
         elif historyList:
             historyList = [historyList]
 
         if path in historyList:
             historyList.remove( path )
 
-        historyList.insert( 0, unicode(path) )
+        historyList.insert( 0, unicode( path ) )
 
         pm.optionVar['pathHistory_%s' % optionName] = historyList[ 0:historySize ]
 
@@ -57,8 +57,8 @@ def _updateFileHistoryPopup( control, popup, optionName, basename=False ):
 
     historyList = pm.optionVar.get( 'pathHistory_%s' % optionName, [] )
 
-    if isinstance( historyList, pm.OptionVarList):
-        historyList = list(historyList)
+    if isinstance( historyList, pm.OptionVarList ):
+        historyList = list( historyList )
     elif historyList:
         historyList = [historyList]
 
@@ -69,7 +69,7 @@ def _updateFileHistoryPopup( control, popup, optionName, basename=False ):
         for path in historyList:
 
             pm.setParent( popup, menu=True )
-            pm.menuItem ( label=path.replace('/','\\'), command=pm.Callback( control.setText, (path)) )
+            pm.menuItem ( label=path.replace( '/', '\\' ), command=pm.Callback( control.setText, ( path ) ) )
 
     if not basename:
         pm.setParent( popup, menu=True )
@@ -91,29 +91,28 @@ def fileBrowserGrp( *args, **kwargs ):
     basename = kwargs.pop( 'basename', False )
 
     if 'fileMode' not in kwargs:
-        kwargs['fileMode'] = kwargs.pop('fm',0)
+        kwargs['fileMode'] = kwargs.pop( 'fm', 0 )
 
     # -- Separate fileDialog2 kwargs, remaining are used for textFieldButtonGrp
     dialog_kwargs = {}
     for k in kwargs.keys():
         if k in __fileDialog2_keys:
-            dialog_kwargs[k] = kwargs.pop(k)
+            dialog_kwargs[k] = kwargs.pop( k )
 
 
     if optionName is None:
-        optionName = ['files', 'dirs'][ ( dialog_kwargs['fileMode'] in [2,3] ) ]
+        optionName = ['files', 'dirs'][ ( dialog_kwargs['fileMode'] in [2, 3] ) ]
 
-
-    if 'edit' in kwargs.keys() or 'query' in kwargs.keys():
-        pm.textFieldButtonGrp( *args, **kwargs )
+    if len( set.intersection( set( kwargs.keys() ), set( ['e', 'q', 'edit', 'query'] ) ) ):
+        return pm.textFieldButtonGrp( *args, **kwargs )
     else:
         control = pm.textFieldButtonGrp( *args, **kwargs )
 
         popControl = pm.popupMenu()
-        pm.popupMenu(
+        pm.popupMenu( 
             popControl,
             edit=True,
-            postMenuCommand=lambda*args: _updateFileHistoryPopup(
+            postMenuCommand=lambda*args: _updateFileHistoryPopup( 
                 control,
                 popControl,
                 optionName,
@@ -134,7 +133,7 @@ def fileBrowserGrp( *args, **kwargs ):
                 control.setText( path, fcc=True )
 
         else:
-            pm.mel.error('Requires Maya 2011 or greater.')
+            pm.mel.error( 'Requires Maya 2011 or greater.' )
             '''
             if versions.current() < versions.v2008_EXT2:
                 callback = 'callback_%s' % control
@@ -164,11 +163,11 @@ def fileBrowserGrp( *args, **kwargs ):
                     )
             '''
 
-        pm.textFieldButtonGrp(
+        pm.textFieldButtonGrp( 
             control,
             edit=True,
             buttonCommand=browsePath,
-            changeCommand=lambda *args: _updateFileHistory(
+            changeCommand=lambda *args: _updateFileHistory( 
                 control,
                 optionName,
                 validate,
@@ -210,37 +209,37 @@ def commandMenuItem( command, args=[], label=None, annotation=None, **kwargs ):
             return pm.menuItem( *args, **kwargs )
 
     argStr = ''
-    if len(args) > 0:
+    if len( args ) > 0:
         argList = []
 
         for arg in args:
             if isinstance( arg, str ):
-                argList.append('\"%s\"' % arg )
+                argList.append( '\"%s\"' % arg )
             else:
-                argList.append( str(arg) )
+                argList.append( str( arg ) )
 
         argStr = ','.join( argList )
 
-    if hasattr(command, 'func'):
+    if hasattr( command, 'func' ):
         command_str = '%s.%s(%s)' % ( command.func.__module__, command.__name__, argStr )
     else:
         command_str = '%s.%s(%s)' % ( command.__module__, command.__name__, argStr )
 
-    if command_str.startswith('__main__'):
-        command_str = '.'.join( command_str.split('.')[1:] )
+    if command_str.startswith( '__main__' ):
+        command_str = '.'.join( command_str.split( '.' )[1:] )
 
     if label is None:
-        if hasattr(command, 'func'):
-            label = utils.niceName( command.func.__name__ )
+        if hasattr( command, 'label' ):
+            label = utils.niceName( command.label )
         else:
             label = utils.niceName( command.__name__ )
 
     if annotation is None:
-        if hasattr(command, 'annotation'):
+        if hasattr( command, 'annotation' ):
             annotation = command.annotation
         else:
             try:
-                annotation = command.__doc__.strip().splitlines()[0].split('.')[0]
+                annotation = command.__doc__.strip().splitlines()[0].split( '.' )[0]
             except:
                 annotation = label
 
@@ -248,9 +247,9 @@ def commandMenuItem( command, args=[], label=None, annotation=None, **kwargs ):
 
     # -- add optionBox menuItem for options --
 
-    if hasattr(command, 'optionmodel'):
+    if hasattr( command, 'optionmodel' ):
         if command.optionmodel is not None:
-            optCmdStr = command_str.split('(')[0] + '(1)'
+            optCmdStr = command_str.split( '(' )[0] + '(1)'
             optAnn = label + ' Options'
 
             optItem = _initMenuItem( command=optCmdStr, annotation=optAnn, optionBox=True, **kwargs )
